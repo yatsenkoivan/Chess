@@ -42,6 +42,8 @@ void set_board() {
 
 }
 
+
+
 void Blue() {
 	SetConsoleTextAttribute(h, 1);
 }
@@ -56,38 +58,6 @@ void Yellow() {
 }
 void White() {
 	SetConsoleTextAttribute(h, 7);
-}
-
-bool warning_check(int king_x, int king_y, int d, int l){ //digit,letter
-	string* current = &board[d][l];
-	bool flag = false;
-	
-	//i
-	if ((*current)[0] == 'i'){
-		if ((*current)[1] == 'b'){
-			if (abs(king_x - l) == 1 && king_y-d == -1){
-				flag = true;
-			}
-		}
-		if ((*current)[1] == 'r'){
-			if (abs(king_x - l) == 1 && king_y-d == 1){
-				flag = true;
-			}
-		}
-	}
-	
-	//J
-	if ((*current)[0] == 'J'){
-		if ( abs(king_x-l) == 1 && abs(king_y-d) == 2 ) flag = true;
-		if ( abs(king_x-l) == 2 && abs(king_y-d) == 1 ) flag = true;
-	}
-	
-	if (flag){
-			warning_x = l;
-			warning_y = d;
-			warning_symbol = *current;
-	}
-	return flag;
 }
 
 void print_white_blank(int i, int j) {
@@ -268,11 +238,11 @@ void print_board() {
 }
 
 //i
-bool move_i(int d_start, int l_start_int, int d_end, int l_end_int) {
+bool move_i(int d_start, int l_start_int, int d_end, int l_end_int, bool check=false) {
 	string* current = &board[d_start][l_start_int];
 	string* end = &board[d_end][l_end_int];
 	bool flag = false;
-	if (player == 1) {
+	if ((*current)[1] == 'b') {
 		if (d_end - d_start == -1 && l_end_int == l_start_int) {
 			if (*end == "") {
 				flag = true;
@@ -293,7 +263,7 @@ bool move_i(int d_start, int l_start_int, int d_end, int l_end_int) {
 		if (!flag) {
 			return false;
 		}
-		if (d_end == 0) {
+		if (d_end == 0 && (!check)) {
 			*current = "Qb";
 		}
 	}
@@ -317,17 +287,20 @@ bool move_i(int d_start, int l_start_int, int d_end, int l_end_int) {
 		if (!flag) {
 			return false;
 		}
-		if (d_end == 7) {
+		if (d_end == 7 && (!check)) {
 			*current = "Qr";
 		}
 	}
-	*end = *current;
-	*current = "";
+	
+	if (!check){
+		*end = *current;
+		*current = "";
+	}
 	return true;
 }
 
 //U
-bool move_U(int d_start, int l_start_int, int d_end, int l_end_int) {
+bool move_U(int d_start, int l_start_int, int d_end, int l_end_int, bool check=false) {
 	string* current = &board[d_start][l_start_int];
 	string* end = &board[d_end][l_end_int];
 
@@ -359,13 +332,15 @@ bool move_U(int d_start, int l_start_int, int d_end, int l_end_int) {
 		}
 
 	}
-	*end = *current;
-	*current = "";
+	if (!check){
+		*end = *current;
+		*current = "";
+	}
 	return true;
 }
 
 //Y
-bool move_Y(int d_start, int l_start_int, int d_end, int l_end_int) {
+bool move_Y(int d_start, int l_start_int, int d_end, int l_end_int, bool check=false) {
 	string* current = &board[d_start][l_start_int];
 	string* end = &board[d_end][l_end_int];
 
@@ -385,8 +360,10 @@ bool move_Y(int d_start, int l_start_int, int d_end, int l_end_int) {
 				return false;
 			}
 		}
-		*end = *current;
-		*current = "";
+		if (!check){
+			*end = *current;
+			*current = "";
+		}
 		return true;
 	}
 	return false;
@@ -401,7 +378,7 @@ bool move_Q(int d_start, int l_start_int, int d_end, int l_end_int) {
 }
 
 //J
-bool move_J(int d_start, int l_start_int, int d_end, int l_end_int) {
+bool move_J(int d_start, int l_start_int, int d_end, int l_end_int, bool check=false) {
 	string* current = &board[d_start][l_start_int];
 	string* end = &board[d_end][l_end_int];
 	bool is_true = false;
@@ -425,9 +402,11 @@ bool move_J(int d_start, int l_start_int, int d_end, int l_end_int) {
 			}
 		}
 	}
-	if (flag) {
+	if (flag && (!check)){
 		*end = *current;
 		*current = "";
+	}
+	if (flag) {
 		return true;
 	}
 	return false;
@@ -456,44 +435,19 @@ int move_K(int y_start, int x_start_int, int y_end, int x_end_int) {
 			}
 		}
 	}
-	
-	if (flag) {
+	if (flag){
 		if (player == 1){
 			king_b_x = x_end_int;
 			king_b_y = y_end;
-			player_warning_check = 'r';
-			king_check_x = king_b_x;
-			king_check_y = king_b_y;
 		}
 		else{
 			king_r_x = x_end_int;
 			king_r_y = y_end;
-			player_warning_check = 'b';
-			king_check_x = king_r_x;
-			king_check_y = king_r_y;
 		}
 		*end = *current;
 		*current = "";
-		
-		if (warning_king == (*end)[1]){
-			warning = false;
-			warning_x = -1;
-			warning_y = -1;
-			warning_symbol = "0";
-			char warning_king = 'n';
-		}
-		for (int i=0; i<n; i++){
-			for (int j=0; j<n; j++){
-				if (board[i][j] != "" && board[i][j][1] == player_warning_check){
-					if (warning_check(king_check_x, king_check_y, i, j)){
-						return -1;
-					}
-				}
-			}
-		}
-		return 1;
 	}
-	return 0;
+	return flag;
 }
 
 
@@ -557,13 +511,8 @@ bool move_main(int x_start, int y_start, int x_end, int y_end) {
 	}
 	//K
 	else if (board[d_start][l_start_int][0] == 'K') {
-		res = move_K(d_start, l_start_int, d_end, l_end_int);
-		if  (res == 0) {
+		if (!move_K(d_start, l_start_int, d_end, l_end_int)) {
 			return false;
-		}
-		if (res == -1){
-			game = false;
-			return true;
 		}
 	}
 		
@@ -573,44 +522,62 @@ bool move_main(int x_start, int y_start, int x_end, int y_end) {
 		return false;
 	}
 	
-	if (warning==player && board[warning_y][warning_x] == warning_symbol) game = false;
-	
-	//WARNING
-	if (player == 1){
-		if (warning_check(king_r_x, king_r_y, d_end, l_end_int)){
-			warning = -1;
-			warning_x = l_end_int;
-			warning_y = d_end;
-			warning_symbol = board[d_end][l_end_int];
-			char warning_king = 'r';
-		}
-		else{
-			warning = 0;
-			warning_x = -1;
-			warning_y = -1;
-			warning_symbol = "0";
-			char warning_king = 'n';
-		}
-	}
-	else{
-		if (warning_check(king_b_x, king_b_y, d_end, l_end_int)){
-			warning = 1;
-			warning_x = l_end_int;
-			warning_y = d_end;
-			warning_symbol = board[d_end][l_end_int];
-			char warning_king = 'b';
-		}
-		else{
-			warning = 0;
-			warning_x = -1;
-			warning_y = -1;
-			warning_symbol = "0";
-			char warning_king = 'n';
-		}
-	}
 	
 	return true;
 	
+}
+
+
+void warning_check(){
+	bool check = false;
+	int king_check_x = -1;
+	int king_check_y = -1;
+	string* current = nullptr;
+	for (int i=0; i<n; i++){
+		for (int j=0; j<n; j++){
+			
+			current = &board[i][j];
+			if (*current == "") continue;
+			
+			if ((*current)[1] == 'b'){
+				king_check_x = king_r_x;
+				king_check_y = king_r_y;
+			}
+			if ((*current)[1] == 'r'){
+				king_check_x = king_b_x;
+				king_check_y = king_b_y;
+			}
+			
+			
+			if ((*current)[0] == 'i'){
+				if (move_i(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+			}
+			if ((*current)[0] == 'J'){
+				if (move_J(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+			}
+			/*if ((*current)[0] == 'U'){
+				if (move_U(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+			}*/
+			if ((*current)[0] == 'Y'){
+				if (move_Y(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+			}
+			
+			if (check){
+				warning = (board[i][j][1] == 'b' ? -1 : 1);
+				return;
+			}
+		}
+	}
+	warning = 0;
+	return;
 }
 
 
@@ -646,6 +613,7 @@ int main()
 				checked_x_end = -1;
 				checked_y_end = -1;
 				if (is_ok) player = -player;
+				warning_check();
 				flag = false;
 			}
 			if (move == 'b'){
