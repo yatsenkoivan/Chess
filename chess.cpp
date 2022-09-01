@@ -61,6 +61,8 @@ void White() {
 bool warning_check(int king_x, int king_y, int d, int l){ //digit,letter
 	string* current = &board[d][l];
 	bool flag = false;
+	
+	//i
 	if ((*current)[0] == 'i'){
 		if ((*current)[1] == 'b'){
 			if (abs(king_x - l) == 1 && king_y-d == -1){
@@ -72,11 +74,18 @@ bool warning_check(int king_x, int king_y, int d, int l){ //digit,letter
 				flag = true;
 			}
 		}
-		if (flag){
+	}
+	
+	//J
+	if ((*current)[0] == 'J'){
+		if ( abs(king_x-l) == 1 && abs(king_y-d) == 2 ) flag = true;
+		if ( abs(king_x-l) == 2 && abs(king_y-d) == 1 ) flag = true;
+	}
+	
+	if (flag){
 			warning_x = l;
 			warning_y = d;
 			warning_symbol = *current;
-		}
 	}
 	return flag;
 }
@@ -564,12 +573,7 @@ bool move_main(int x_start, int y_start, int x_end, int y_end) {
 		return false;
 	}
 	
-	
-	
-	if (warning+player == 0 && board[warning_y][warning_x] == warning_symbol){
-		game = false;
-	}
-	
+	if (warning==player && board[warning_y][warning_x] == warning_symbol) game = false;
 	
 	//WARNING
 	if (player == 1){
@@ -663,10 +667,6 @@ int main()
 				flag = true;
 			}
 			if (move == 'h') game = false;
-			if (move == 'l'){
-				cout << king_r_x << " " << king_r_y << endl;
-				cin >> qweasd;
-			}
 		}
 	}
 	cout << "\a\n\nPlayer " << (player == 1 ? "2:" : "1:") << " won!" << endl;
