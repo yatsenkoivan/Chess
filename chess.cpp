@@ -304,6 +304,7 @@ bool move_U(int d_start, int l_start_int, int d_end, int l_end_int, bool check=f
 	string* current = &board[d_start][l_start_int];
 	string* end = &board[d_end][l_end_int];
 
+	if (d_start!=d_end && l_start_int!=l_end_int) return false;
 	if (player == 1 && (*end).length() > 0 && (*end)[1] == 'b') return false;
 	if (player == -1 && (*end).length() > 0 && (*end)[1] == 'r') return false;
 	if (d_end == d_start) {
@@ -413,7 +414,7 @@ bool move_J(int d_start, int l_start_int, int d_end, int l_end_int, bool check=f
 }
 
 //K
-int move_K(int y_start, int x_start_int, int y_end, int x_end_int) {
+int move_K(int y_start, int x_start_int, int y_end, int x_end_int, bool check=false) {
 	string* current = &board[y_start][x_start_int];
 	string* end = &board[y_end][x_end_int];
 	bool flag = false;
@@ -435,7 +436,7 @@ int move_K(int y_start, int x_start_int, int y_end, int x_end_int) {
 			}
 		}
 	}
-	if (flag){
+	if (flag && (!check)){
 		if (player == 1){
 			king_b_x = x_end_int;
 			king_b_y = y_end;
@@ -559,18 +560,37 @@ void warning_check(){
 					check = true;
 				}
 			}
-			/*if ((*current)[0] == 'U'){
+			if ((*current)[0] == 'U'){
 				if (move_U(i, j, king_check_y, king_check_x, true)){
 					check = true;
 				}
-			}*/
+			}
 			if ((*current)[0] == 'Y'){
 				if (move_Y(i, j, king_check_y, king_check_x, true)){
 					check = true;
 				}
 			}
+			if ((*current)[0] == 'Q'){
+				if (move_U(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+				else{
+					if (move_Y(i, j, king_check_y, king_check_x, true)){
+						check = true;
+					}
+				}
+			}
+			if ((*current)[0] == 'K'){
+				if (move_K(i, j, king_check_y, king_check_x, true)){
+					check = true;
+				}
+			}
 			
 			if (check){
+				if (warning == (board[i][j][1] == 'b' ? -1 : 1)){
+					game = false;
+					return;
+				}
 				warning = (board[i][j][1] == 'b' ? -1 : 1);
 				return;
 			}
