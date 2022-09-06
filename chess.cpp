@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <conio.h>
 #include <windows.h>
 using namespace std;
@@ -16,6 +17,9 @@ int checked_x = 0;
 int checked_y = 7;
 int checked_x_end = -1;
 int checked_y_end = -1;
+
+vector<int> possible_x{};
+vector<int> possible_y{};
 
 int king_r_x = 4;
 int king_r_y = 0;
@@ -60,15 +64,30 @@ void White() {
 	SetConsoleTextAttribute(h, 7);
 }
 
+bool is_in_vec(int x, int y){
+	for (int i=0; i<possible_x.size(); i++){
+		if (possible_x[i] == x && possible_y[i] == y){
+			return true;
+		}
+	}
+	return false;
+}
+
 void print_white_blank(int i, int j) {
 	
+	
+	
 	if (i == checked_y && j == checked_x) {
-		Green();
+		Yellow();
 		s = '#';
 	}
 	if (i == checked_y_end && j == checked_x_end) {
 		Yellow();
 		s = '#';
+	}
+	
+	if (is_in_vec(j,i)){
+		Green();
 	}
 	
 	//Warning
@@ -84,14 +103,23 @@ void print_white_blank(int i, int j) {
 	s = 219;
 }
 void print_black_blank(int i, int j) {
+	
+	bool is_in_vec_check = is_in_vec(j,i);
+	
 	char temp = ' ';
 	
+	
 	if (i == checked_y && j == checked_x) {
-		Green();
+		Yellow();
 	}
 	if (i == checked_y_end && j == checked_x_end) {
 		Yellow();
 	}
+	
+	if (is_in_vec_check){
+		Green();
+	}
+	
 	
 	//Warning
 	if (warning == 1 && i == king_b_y && j == king_b_x){
@@ -100,6 +128,10 @@ void print_black_blank(int i, int j) {
 	}
 	if (warning == -1 && i == king_r_y && j == king_r_x){
 		Red();
+		temp = s;
+	}
+	
+	if (is_in_vec_check){
 		temp = s;
 	}
 	
@@ -115,15 +147,21 @@ void print_black_blank(int i, int j) {
 }
 
 void print_white(int i, int j) {
+	bool is_in_vec_check = is_in_vec(j,i);
+	
 	
 	if (i == checked_y && j == checked_x) {
-		Green();
+		Yellow();
 		s = '#';
 	}
 	if (i == checked_y_end && j == checked_x_end) {
 		Yellow();
 		s = '#';
 	}
+	if (is_in_vec_check){
+		Green();
+	}
+	
 	//Warning
 	if (warning == 1 && i == king_b_y && j == king_b_x){
 		Red();
@@ -140,8 +178,12 @@ void print_white(int i, int j) {
 		White();
 	}
 	else cout << s;
-	if (i == checked_y && j == checked_x) Green();
+	
+	if (i == checked_y && j == checked_x) Yellow();
 	if (i == checked_y_end && j == checked_x_end) Yellow();
+	
+	if (is_in_vec_check) Green();
+	
 	//Warning
 	if (warning == 1 && i == king_b_y && j == king_b_x){
 		Red();
@@ -154,13 +196,20 @@ void print_white(int i, int j) {
 	White();
 }
 void print_black(int i, int j) {
+	bool is_in_vec_check = is_in_vec(j,i);
+	
 	char temp = ' ';
+	
 	if (i == checked_y && j == checked_x) {
-		Green();
+		Yellow();
 	}
 	if (i == checked_y_end && j == checked_x_end) {
 		Yellow();
 	}
+	if (is_in_vec_check){
+		Green();
+	}
+	
 	//Warning
 	if (warning == 1 && i == king_b_y && j == king_b_x){
 		Red();
@@ -170,7 +219,9 @@ void print_black(int i, int j) {
 		Red();
 		temp = s;
 	}
-	
+	if (is_in_vec_check){
+		temp = s;
+	}
 	if (i == checked_y && j == checked_x) {
 		temp = '#';
 	}
@@ -187,8 +238,11 @@ void print_black(int i, int j) {
 		White();
 	}
 	else cout << temp;
-	if (i == checked_y && j == checked_x) Green();
+	
+	if (i == checked_y && j == checked_x) Yellow();
 	if (i == checked_y_end && j == checked_x_end) Yellow();
+	if (is_in_vec_check) Green();
+	
 	//Warning
 	if (warning == 1 && i == king_b_y && j == king_b_x){
 		Red();
@@ -600,6 +654,63 @@ void warning_check(){
 	return;
 }
 
+void find_possible(int checked_x, int checked_y){
+	string* current = &board[checked_y][checked_x];
+	bool is_possible = false;
+	for (int i=0; i<n; i++){
+		for (int j=0; j<n; j++){
+			
+			is_possible = false;
+			
+			if ((*current)[0] == 'i'){
+				if (move_i(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+			}
+			
+			if ((*current)[0] == 'J'){
+				if (move_J(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+			}
+			
+			if ((*current)[0] == 'U'){
+				if (move_U(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+			}
+			
+			if ((*current)[0] == 'Y'){
+				if (move_Y(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+			}
+			
+			if ((*current)[0] == 'Q'){
+				if (move_U(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+				else{
+					if (move_Y(checked_y, checked_x, i, j, true)){
+						is_possible = true;
+					}
+				}
+			}
+			
+			if ((*current)[0] == 'K'){
+				if (move_K(checked_y, checked_x, i, j, true)){
+					is_possible = true;
+				}
+			}
+			
+			if (is_possible){
+				possible_x.push_back(j);
+				possible_y.push_back(i);
+			}
+		}
+	}
+	return;
+}
 
 int main()
 {
@@ -632,6 +743,8 @@ int main()
 				checked_x = checked_x_end;
 				checked_x_end = -1;
 				checked_y_end = -1;
+				possible_x.clear();
+				possible_y.clear();
 				if (is_ok) player = -player;
 				warning_check();
 				flag = false;
@@ -650,8 +763,13 @@ int main()
 			if (move == 'a' && checked_x > 0) checked_x--;
 			if (move == 'd' && checked_x < 7) checked_x++;
 			if (move == 'f') {
+				if (board[checked_y][checked_x] != ""){
+					if (board[checked_y][checked_x][1] == 'b' && player == -1) continue;
+					if (board[checked_y][checked_x][1] == 'r' && player == 1) continue;
+				}
 				checked_x_end = checked_x;
 				checked_y_end = checked_y;
+				find_possible(checked_x, checked_y);
 				flag = true;
 			}
 			if (move == 'h') game = false;
