@@ -4,8 +4,6 @@
 #include <windows.h>
 using namespace std;
 
-int qweasd = 0;
-
 bool game = true;
 
 HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -359,8 +357,8 @@ bool move_U(int d_start, int l_start_int, int d_end, int l_end_int, bool check=f
 	string* end = &board[d_end][l_end_int];
 
 	if (d_start!=d_end && l_start_int!=l_end_int) return false;
-	if (player == 1 && (*end).length() > 0 && (*end)[1] == 'b') return false;
-	if (player == -1 && (*end).length() > 0 && (*end)[1] == 'r') return false;
+	if ((*current)[1] == 'b' && (*end).length() > 0 && (*end)[1] == 'b') return false;
+	if ((*current)[1] == 'r' && (*end).length() > 0 && (*end)[1] == 'r') return false;
 	if (d_end == d_start) {
 		if (l_start_int > l_end_int) {
 			for (int i = l_start_int - 1; i > l_end_int; i--) {
@@ -402,8 +400,8 @@ bool move_Y(int d_start, int l_start_int, int d_end, int l_end_int, bool check=f
 	int d_step = 1;
 	int l_step = 1;
 
-	if (player == 1 && (*end).length() > 0 && (*end)[1] == 'b') return false;
-	if (player == -1 && (*end).length() > 0 && (*end)[1] == 'r') return false;
+	if ((*current)[1] == 'b' && (*end).length() > 0 && (*end)[1] == 'b') return false;
+	if ((*current)[1] == 'r' && (*end).length() > 0 && (*end)[1] == 'r') return false;
 
 	if (abs(l_start_int - l_end_int) == abs(d_start - d_end)) {
 		if (d_start > d_end) d_step = -1;
@@ -449,10 +447,10 @@ bool move_J(int d_start, int l_start_int, int d_end, int l_end_int, bool check=f
 			flag = true;
 		}
 		else {
-			if (player == 1 && (*end)[1] == 'r') {
+			if ((*current)[1] == 'b' && (*end)[1] == 'r') {
 				flag = true;
 			}
-			if (player == -1 && (*end)[1] == 'b') {
+			if ((*current)[1] == 'r' && (*end)[1] == 'b') {
 				flag = true;
 			}
 		}
@@ -482,10 +480,10 @@ int move_K(int y_start, int x_start_int, int y_end, int x_end_int, bool check=fa
 			flag = true;
 		}
 		else {
-			if (player == 1 && (*end)[1] == 'r') {
+			if ((*current)[1] == 'b' && (*end)[1] == 'r') {
 				flag = true;
 			}
-			if (player == -1 && (*end)[1] == 'b') {
+			if ((*current)[1] == 'r' && (*end)[1] == 'b') {
 				flag = true;
 			}
 		}
